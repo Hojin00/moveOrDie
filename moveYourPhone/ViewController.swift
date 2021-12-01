@@ -206,6 +206,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         targetColorArray.append(targetColor4)
         
         gameObjectiveLabel.text = "Memorize the colors below (in 5 seconds)"
+        
+        self.navigationController?.navigationBar.isHidden = true
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
