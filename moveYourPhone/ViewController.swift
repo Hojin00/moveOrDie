@@ -64,6 +64,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         self.targetColor3.isHidden = false
         self.targetColor4.isHidden = false
         
+        systemBlackButton.isHidden = false
+        customYellowButton.isHidden = false
+        customPinkButton.isHidden = false
+        customBrownButton.isHidden = false
+        systemGreenButton.isHidden = false
+        systemPinkButton.isHidden = false
+        systemTealButton.isHidden = false
+        systemYellowButton.isHidden = false
+        systemBlueButton.isHidden = false
+        systemRedButton.isHidden = false
+        systemGrayButton.isHidden = false
+        systemPurpleButton.isHidden = false
+
+        
         Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { timer in
             self.targetColor1.isHidden = true
             self.targetColor2.isHidden = true
@@ -77,6 +91,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         for i in 0...3 {
             let auxRoundIndex = Int.random(in: 0...colorArray.count-1)
             roundColors.append(stringColorNames[auxRoundIndex])
+            
             targetColorArray[i].backgroundColor = colorArray[auxRoundIndex]
         }
         
@@ -124,6 +139,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             } else {
                 print("errou")
                 gameObjectiveLabel.text = "Try again"
+                
+                systemBlackButton.isHidden = true
+                customYellowButton.isHidden = true
+                customPinkButton.isHidden = true
+                customBrownButton.isHidden = true
+                systemGreenButton.isHidden = true
+                systemPinkButton.isHidden = true
+                systemTealButton.isHidden = true
+                systemYellowButton.isHidden = true
+                systemBlueButton.isHidden = true
+                systemRedButton.isHidden = true
+                systemGrayButton.isHidden = true
+                systemPurpleButton.isHidden = true
+                
                 startButton.setTitle("start again", for: .normal)
                 point = 0
                 
@@ -132,6 +161,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if roundColors.count == cont {
                 print("done")
                 startButton.setTitle("start again", for: .normal)
+                gameObjectiveLabel.text = "Well done!"
                 point += 1
                 
             }
@@ -203,12 +233,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         if previousLatString != currentLatString || previousLongString != currentLongString {
 //            print("andou")
-            blockView.isHidden = true
-            blockIndicator.stopAnimating()
+//            blockView.isHidden = true
+//            blockIndicator.stopAnimating()
         } else {
 //            print("parado")
-            blockView.isHidden = false
-            blockIndicator.startAnimating()
+//            blockView.isHidden = false
+//            blockIndicator.startAnimating()
         }
         previousLat = first.coordinate.latitude
         previousLong = first.coordinate.longitude
