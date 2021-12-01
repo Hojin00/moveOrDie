@@ -18,6 +18,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var selectedColors: [String] = []
     var cont: Int = 0
     var point: Int = 0
+    var countdown: Int = 15
 //    let manager = CMMotionActivityManager()
 //    let manager = CMMotionManager()
     let manager = CMPedometer()
@@ -85,7 +86,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             self.targetColor4.isHidden = true
             timer.invalidate()
             self.isShownColors = true
-            self.gameObjectiveLabel.text = "Repeat the colors"
         }
         
         for i in 0...3 {
@@ -93,6 +93,35 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             roundColors.append(stringColorNames[auxRoundIndex])
             
             targetColorArray[i].backgroundColor = colorArray[auxRoundIndex]
+        }
+        
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            self.countdown -= 1
+            
+            if self.countdown <= 10 {
+                self.gameObjectiveLabel.text = "Repeat the colors. Time left: \(self.countdown)s"
+                if self.countdown == 0 {
+                    self.gameObjectiveLabel.text = "Try again"
+                    
+                    self.systemBlackButton.isHidden = true
+                    self.customYellowButton.isHidden = true
+                    self.customPinkButton.isHidden = true
+                    self.customBrownButton.isHidden = true
+                    self.systemGreenButton.isHidden = true
+                    self.systemPinkButton.isHidden = true
+                    self.systemTealButton.isHidden = true
+                    self.systemYellowButton.isHidden = true
+                    self.systemBlueButton.isHidden = true
+                    self.systemRedButton.isHidden = true
+                    self.systemGrayButton.isHidden = true
+                    self.systemPurpleButton.isHidden = true
+                    
+                    self.startButton.setTitle("start again", for: .normal)
+                    self.point = 0
+                    timer.invalidate()
+                }
+            }
+
         }
         
         print("roundColors: \(roundColors)")
@@ -155,7 +184,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 
                 startButton.setTitle("start again", for: .normal)
                 point = 0
-                
             }
             
             if roundColors.count == cont {
@@ -163,6 +191,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 startButton.setTitle("start again", for: .normal)
                 gameObjectiveLabel.text = "Well done!"
                 point += 1
+                if UserDefaults.standard.integer(forKey: "BestScore") < point {
+                    UserDefaults.standard.set(point, forKey: "BestScore")
+                }
+
                 
             }
             pointLabel.text = "Score: \(point)"
