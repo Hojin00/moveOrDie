@@ -233,12 +233,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         
         if previousLatString != currentLatString || previousLongString != currentLongString {
 //            print("andou")
-//            blockView.isHidden = true
-//            blockIndicator.stopAnimating()
+            blockView.isHidden = true
+            blockIndicator.stopAnimating()
         } else {
 //            print("parado")
-//            blockView.isHidden = false
-//            blockIndicator.startAnimating()
+            blockView.isHidden = false
+            blockIndicator.startAnimating()
         }
         previousLat = first.coordinate.latitude
         previousLong = first.coordinate.longitude
