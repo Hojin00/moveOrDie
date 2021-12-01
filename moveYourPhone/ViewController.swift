@@ -8,6 +8,7 @@
 import UIKit
 import CoreMotion
 import CoreLocation
+import Combine
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
@@ -27,6 +28,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var previousLong: CLLocationDegrees!
     var targetColorArray: [UIButton] = []
     var isShownColors: Bool = false
+    let location = CurrentValueSubject<CLLocationCoordinate2D, Never>(CLLocationCoordinate2D(latitude: 0, longitude: 0))
+    var subscription: AnyCancellable?
+    
     @IBOutlet weak var pointLabel: UILabel!
     @IBOutlet weak var gameObjectiveLabel: UILabel!
     @IBOutlet weak var targetColor1: UIButton!
@@ -119,6 +123,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.startButton.setTitle("start again", for: .normal)
                     self.point = 0
                     timer.invalidate()
+                    self.countdown = 15
                 }
             }
 
@@ -194,8 +199,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 if UserDefaults.standard.integer(forKey: "BestScore") < point {
                     UserDefaults.standard.set(point, forKey: "BestScore")
                 }
-
-                
             }
             pointLabel.text = "Score: \(point)"
         }
@@ -240,42 +243,68 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         gameObjectiveLabel.text = "Memorize the colors below (in 5 seconds)"
         
         self.navigationController?.navigationBar.isHidden = true
+        subscription = location.throttle(for: .seconds(0.1), scheduler: DispatchQueue.main, latest: true).receive(on: DispatchQueue.main).sink { [self] coordinate in
+//            print(coordinate)
+//
+            if previousLat == nil || previousLong == nil {
+                previousLat = coordinate.latitude
+                previousLong = coordinate.longitude
+                return
+            }
+
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.minimumFractionDigits = 4
+            formatter.maximumFractionDigits = 4
+            let previousLatString = formatter.string(from: previousLat as NSNumber) ?? ""
+            let previousLongString = formatter.string(from: previousLong as NSNumber) ?? ""
+//            print("previous:  latitude: \(previousLatString) longitude: \(previousLongString) ")
+
+            let currentLatString = formatter.string(from: coordinate.latitude as NSNumber) ?? ""
+            let currentLongString = formatter.string(from: coordinate.longitude as NSNumber) ?? ""
+//            print("current:  latitude: \(currentLatString) longitude: \(currentLongString) ")
+            
+            print(distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString))
+            if distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString) > 0.001 {
+    //            print("andou")
+                blockView.isHidden = true
+                blockIndicator.stopAnimating()
+            } else {
+    //            print("parado")
+                blockView.isHidden = false
+                blockIndicator.startAnimating()
+            }
+            previousLat = coordinate.latitude
+            previousLong = coordinate.longitude
+            
+        }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let first = locations.first else { return }
         
-        if previousLat == nil || previousLong == nil {
-            previousLat = first.coordinate.latitude
-            previousLong = first.coordinate.longitude
-            return
-        }
-        
-        
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.minimumFractionDigits = 5
-        formatter.maximumFractionDigits = 5
-        let previousLatString = formatter.string(from: previousLat as NSNumber) ?? ""
-        let previousLongString = formatter.string(from: previousLong as NSNumber) ?? ""
-//        print("previous:  latitude: \(previousLatString) longitude: \(previousLongString) ")
-        
-        let currentLatString = formatter.string(from: first.coordinate.latitude as NSNumber) ?? ""
-        let currentLongString = formatter.string(from: first.coordinate.longitude as NSNumber) ?? ""
-//        print("current:  latitude: \(currentLatString) longitude: \(currentLongString) ")
-        
-        if previousLatString != currentLatString || previousLongString != currentLongString {
-//            print("andou")
-            blockView.isHidden = true
-            blockIndicator.stopAnimating()
-        } else {
-//            print("parado")
-            blockView.isHidden = false
-            blockIndicator.startAnimating()
-        }
-        previousLat = first.coordinate.latitude
-        previousLong = first.coordinate.longitude
-        
+        location.send(first.coordinate)
+    }
+    
+    func degreesToRadians(degrees: Double) -> Double {
+      return degrees * Double.pi / 180;
+    }
+
+    func distanceInKmBetweenEarthCoordinates(lat1: String, lon1: String, lat2: String, lon2: String) -> Double {
+        let earthRadiusKm: Double = 6371;
+
+        let dLat = degreesToRadians(degrees: Double(lat2)!-Double(lat1)!);
+        let dLon = degreesToRadians(degrees: Double(lon2)!-Double(lon1)!);
+
+        let aux_lat1 = degreesToRadians(degrees: Double(lat1)!);
+        let aux_lat2 = degreesToRadians(degrees: Double(lat2)!);
+
+        let a = sin(dLat/2) * sin(dLat/2)
+        let b = sin(dLon/2) * sin(dLon/2)
+        let c = cos(aux_lat1) * cos(aux_lat2);
+        let d = 2 * atan2(sqrt((a+b)*c), sqrt(1-((a+b)*c)));
+        return earthRadiusKm * d;
     }
 }
