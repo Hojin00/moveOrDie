@@ -24,15 +24,15 @@
                                         <subviews>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Ponto" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zAV-It-AUd">
                                                 <rect key="frame" x="165" y="0.0" width="44.5" height="17.5"/>
-                                                <color key="tintColor" red="1" green="0.99997597930000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <nil key="textColor"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="CsX-yZ-BFk">
                                                 <rect key="frame" x="166.5" y="42.5" width="41.5" height="17.5"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                <color key="textColor" red="0.97653514149999998" green="0.96833842989999996" blue="0.98431700470000005" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                                <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                         </subviews>
@@ -219,8 +219,12 @@
                                         </constraints>
                                     </stackView>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tue-ru-4Y4">
-                                        <rect key="frame" x="159" y="648" width="56" height="60"/>
-                                        <color key="tintColor" red="1" green="0.99997597930000004" blue="1" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                                        <rect key="frame" x="112" y="648" width="150" height="60"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="150" id="uMO-eu-NjJ"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <state key="normal" title="Button"/>
                                         <buttonConfiguration key="configuration" style="plain" title="Start"/>
                                         <connections>
@@ -282,9 +286,21 @@
                     <connections>
                         <outlet property="blockIndicator" destination="aLd-Bu-tSt" id="MvL-FF-7h6"/>
                         <outlet property="blockView" destination="LNs-gt-8qD" id="s3O-id-TcA"/>
+                        <outlet property="customBrownButton" destination="M2b-JO-Jhs" id="hzF-DR-tIy"/>
+                        <outlet property="customPinkButton" destination="16D-ql-Ujd" id="GTE-cH-6WQ"/>
+                        <outlet property="customYellowButton" destination="QWE-kP-Y9i" id="dCY-OD-hky"/>
                         <outlet property="gameObjectiveLabel" destination="CsX-yZ-BFk" id="C4N-nP-JUU"/>
                         <outlet property="pointLabel" destination="zAV-It-AUd" id="saM-pz-Qqy"/>
                         <outlet property="startButton" destination="Tue-ru-4Y4" id="fpU-Fl-0GR"/>
+                        <outlet property="systemBlackButton" destination="7pf-OT-u32" id="tc1-pB-nDH"/>
+                        <outlet property="systemBlueButton" destination="Itf-Tw-uiP" id="DJR-QX-PmW"/>
+                        <outlet property="systemGrayButton" destination="O9y-7p-iGM" id="IKi-EP-9fS"/>
+                        <outlet property="systemGreenButton" destination="Ue7-pc-vzS" id="sFc-YF-qkn"/>
+                        <outlet property="systemPinkButton" destination="dao-1N-aAo" id="mfn-TZ-BMJ"/>
+                        <outlet property="systemPurpleButton" destination="Z6h-LB-gfK" id="bNz-ys-75Z"/>
+                        <outlet property="systemRedButton" destination="wpm-4U-sc0" id="p3a-Cm-ip7"/>
+                        <outlet property="systemTealButton" destination="U5f-eH-IUj" id="mL1-rn-gA3"/>
+                        <outlet property="systemYellowButton" destination="ZjW-za-Hzl" id="rvW-KI-TTW"/>
                         <outlet property="targetColor1" destination="BaR-kS-L1B" id="Ay0-gS-HsN"/>
                         <outlet property="targetColor2" destination="mP5-V6-Uju" id="WKY-ia-ogg"/>
                         <outlet property="targetColor3" destination="h2W-Kp-7pC" id="ntM-e2-oee"/>

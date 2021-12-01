@@ -32,10 +32,20 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     @IBOutlet weak var targetColor2: UIButton!
     @IBOutlet weak var targetColor3: UIButton!
     @IBOutlet weak var targetColor4: UIButton!
-    
     @IBOutlet weak var startButton: UIButton!
   
-    
+    @IBOutlet weak var systemBlackButton: UIButton!
+    @IBOutlet weak var customYellowButton: UIButton!
+    @IBOutlet weak var customPinkButton: UIButton!
+    @IBOutlet weak var customBrownButton: UIButton!
+    @IBOutlet weak var systemGreenButton: UIButton!
+    @IBOutlet weak var systemPinkButton: UIButton!
+    @IBOutlet weak var systemTealButton: UIButton!
+    @IBOutlet weak var systemYellowButton: UIButton!
+    @IBOutlet weak var systemBlueButton: UIButton!
+    @IBOutlet weak var systemRedButton: UIButton!
+    @IBOutlet weak var systemGrayButton: UIButton!
+    @IBOutlet weak var systemPurpleButton: UIButton!
     
     @IBOutlet weak var blockView: UIView!
     @IBOutlet weak var blockIndicator: UIActivityIndicatorView!
@@ -125,7 +135,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 point += 1
                 
             }
-            pointLabel.text = "ponto: \(point)"
+            pointLabel.text = "Score: \(point)"
         }
         
     }
@@ -134,12 +144,32 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        targetColor1.layer.cornerRadius = 10
+        targetColor2.layer.cornerRadius = 10
+        targetColor3.layer.cornerRadius = 10
+        targetColor4.layer.cornerRadius = 10
+
+        systemBlackButton.layer.cornerRadius = 10
+        customYellowButton.layer.cornerRadius = 10
+        customPinkButton.layer.cornerRadius = 10
+        customBrownButton.layer.cornerRadius = 10
+        systemGreenButton.layer.cornerRadius = 10
+        systemPinkButton.layer.cornerRadius = 10
+        systemTealButton.layer.cornerRadius = 10
+        systemYellowButton.layer.cornerRadius = 10
+        systemBlueButton.layer.cornerRadius = 10
+        systemRedButton.layer.cornerRadius = 10
+        systemGrayButton.layer.cornerRadius = 10
+        systemPurpleButton.layer.cornerRadius = 10
+        
+        startButton.layer.cornerRadius = 10
+        
         locationManager = CLLocationManager()
         locationManager?.delegate = self
         locationManager?.desiredAccuracy = kCLLocationAccuracyBestForNavigation
         locationManager?.requestWhenInUseAuthorization()
         locationManager?.startUpdatingLocation()
-//        start()
+
         targetColorArray.append(targetColor1)
         targetColorArray.append(targetColor2)
         targetColorArray.append(targetColor3)
@@ -161,8 +191,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.locale = Locale(identifier: "en_US")
-        formatter.minimumFractionDigits = 4
-        formatter.maximumFractionDigits = 4
+        formatter.minimumFractionDigits = 5
+        formatter.maximumFractionDigits = 5
         let previousLatString = formatter.string(from: previousLat as NSNumber) ?? ""
         let previousLongString = formatter.string(from: previousLong as NSNumber) ?? ""
 //        print("previous:  latitude: \(previousLatString) longitude: \(previousLongString) ")
