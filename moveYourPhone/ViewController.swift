@@ -13,8 +13,8 @@ import Combine
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
     
-    var stringColorNames: [String] = ["black", "customYellow", "customPink", "customBrown", "systemGreen", "systemPink", "systemTeal", "systemYellow", "systemBlue", "systemRed", "systemGray", "systemPurple"]
-    var colorArray: [UIColor?] = [UIColor.black, UIColor(named: "color1"), UIColor(named: "color2"), UIColor(named: "color3"), UIColor.systemGreen, UIColor.systemPink, UIColor.systemTeal, UIColor.systemYellow, UIColor.systemBlue, UIColor.systemRed, UIColor.systemGray, UIColor.systemPurple]
+    var stringColorNames: [String] = ["black", "customYellow", "customPink", "customBrown", "systemGreen", "systemOrange", "systemTeal", "systemYellow", "systemBlue", "systemRed", "systemGray", "systemPurple"]
+    var colorArray: [UIColor?] = [UIColor.black, UIColor(named: "color1"), UIColor(named: "color2"), UIColor(named: "color3"), UIColor.systemGreen, UIColor.systemOrange, UIColor.systemTeal, UIColor.systemYellow, UIColor.systemBlue, UIColor.systemRed, UIColor.systemGray, UIColor.systemPurple]
     var roundColors: [String] = []
     var selectedColors: [String] = []
     var cont: Int = 0

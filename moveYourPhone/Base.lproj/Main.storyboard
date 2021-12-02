@@ -201,7 +201,7 @@
                                             </button>
                                             <button opaque="NO" tag="5" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dao-1N-aAo">
                                                 <rect key="frame" x="264.5" y="0.0" width="109.5" height="60"/>
-                                                <color key="backgroundColor" systemColor="systemPinkColor"/>
+                                                <color key="backgroundColor" systemColor="systemOrangeColor"/>
                                                 <color key="tintColor" systemColor="systemOrangeColor"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="plain" title=""/>
