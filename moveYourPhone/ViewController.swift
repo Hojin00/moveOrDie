@@ -8,12 +8,13 @@
 import UIKit
 import CoreMotion
 import CoreLocation
+import Combine
 
 class ViewController: UIViewController, CLLocationManagerDelegate {
     
     
-    var stringColorNames: [String] = ["black", "customYellow", "customPink", "customBrown", "systemGreen", "systemPink", "systemTeal", "systemYellow", "systemBlue", "systemRed", "systemGray", "systemPurple"]
-    var colorArray: [UIColor?] = [UIColor.black, UIColor(named: "color1"), UIColor(named: "color2"), UIColor(named: "color3"), UIColor.systemGreen, UIColor.systemPink, UIColor.systemTeal, UIColor.systemYellow, UIColor.systemBlue, UIColor.systemRed, UIColor.systemGray, UIColor.systemPurple]
+    var stringColorNames: [String] = ["black", "customYellow", "customPink", "customBrown", "systemGreen", "systemOrange", "systemTeal", "systemYellow", "systemBlue", "systemRed", "systemGray", "systemPurple"]
+    var colorArray: [UIColor?] = [UIColor.black, UIColor(named: "color1"), UIColor(named: "color2"), UIColor(named: "color3"), UIColor.systemGreen, UIColor.systemOrange, UIColor.systemTeal, UIColor.systemYellow, UIColor.systemBlue, UIColor.systemRed, UIColor.systemGray, UIColor.systemPurple]
     var roundColors: [String] = []
     var selectedColors: [String] = []
     var cont: Int = 0
@@ -27,6 +28,10 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var previousLong: CLLocationDegrees!
     var targetColorArray: [UIButton] = []
     var isShownColors: Bool = false
+    let location = CurrentValueSubject<CLLocationCoordinate2D, Never>(CLLocationCoordinate2D(latitude: 0, longitude: 0))
+    var subscription: AnyCancellable?
+    var finished: Bool = false
+    
     @IBOutlet weak var pointLabel: UILabel!
     @IBOutlet weak var gameObjectiveLabel: UILabel!
     @IBOutlet weak var targetColor1: UIButton!
@@ -88,6 +93,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             self.isShownColors = true
         }
         
+        
         for i in 0...3 {
             let auxRoundIndex = Int.random(in: 0...colorArray.count-1)
             roundColors.append(stringColorNames[auxRoundIndex])
@@ -101,7 +107,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if self.countdown <= 10 {
                 self.gameObjectiveLabel.text = "Repeat the colors. Time left: \(self.countdown)s"
                 if self.countdown == 0 {
-                    self.gameObjectiveLabel.text = "Try again"
+                    if self.finished {
+                        self.gameObjectiveLabel.text = "Well Done"
+                    } else {
+                        self.gameObjectiveLabel.text = "Try again"
+                        self.point = 0
+                    }
+                    
                     
                     self.systemBlackButton.isHidden = true
                     self.customYellowButton.isHidden = true
@@ -117,8 +129,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.systemPurpleButton.isHidden = true
                     
                     self.startButton.setTitle("start again", for: .normal)
-                    self.point = 0
                     timer.invalidate()
+                    self.countdown = 15
+                    self.finished = false
                 }
             }
 
@@ -167,6 +180,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 cont += 1
             } else {
                 print("errou")
+                self.countdown = 1
                 gameObjectiveLabel.text = "Try again"
                 
                 systemBlackButton.isHidden = true
@@ -188,14 +202,13 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             
             if roundColors.count == cont {
                 print("done")
+                finished = true
                 startButton.setTitle("start again", for: .normal)
-                gameObjectiveLabel.text = "Well done!"
                 point += 1
                 if UserDefaults.standard.integer(forKey: "BestScore") < point {
                     UserDefaults.standard.set(point, forKey: "BestScore")
                 }
-
-                
+                countdown = 1
             }
             pointLabel.text = "Score: \(point)"
         }
@@ -240,42 +253,68 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         gameObjectiveLabel.text = "Memorize the colors below (in 5 seconds)"
         
         self.navigationController?.navigationBar.isHidden = true
+        subscription = location.throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true).receive(on: DispatchQueue.main).sink { [self] coordinate in
+//            print(coordinate)
+//
+            if previousLat == nil || previousLong == nil {
+                previousLat = coordinate.latitude
+                previousLong = coordinate.longitude
+                return
+            }
+
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.locale = Locale(identifier: "en_US")
+            formatter.minimumFractionDigits = 8
+            formatter.maximumFractionDigits = 8
+            let previousLatString = formatter.string(from: previousLat as NSNumber) ?? ""
+            let previousLongString = formatter.string(from: previousLong as NSNumber) ?? ""
+//            print("previous:  latitude: \(previousLatString) longitude: \(previousLongString) ")
+
+            let currentLatString = formatter.string(from: coordinate.latitude as NSNumber) ?? ""
+            let currentLongString = formatter.string(from: coordinate.longitude as NSNumber) ?? ""
+//            print("current:  latitude: \(currentLatString) longitude: \(currentLongString) ")
+            
+            print(distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString))
+            if distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString) > 0.0003 {
+    //            print("andou")
+                blockView.isHidden = true
+                blockIndicator.stopAnimating()
+            } else {
+    //            print("parado")
+                blockView.isHidden = false
+                blockIndicator.startAnimating()
+            }
+            previousLat = coordinate.latitude
+            previousLong = coordinate.longitude
+            
+        }
+        
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let first = locations.first else { return }
         
-        if previousLat == nil || previousLong == nil {
-            previousLat = first.coordinate.latitude
-            previousLong = first.coordinate.longitude
-            return
-        }
-        
-        
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.minimumFractionDigits = 5
-        formatter.maximumFractionDigits = 5
-        let previousLatString = formatter.string(from: previousLat as NSNumber) ?? ""
-        let previousLongString = formatter.string(from: previousLong as NSNumber) ?? ""
-//        print("previous:  latitude: \(previousLatString) longitude: \(previousLongString) ")
-        
-        let currentLatString = formatter.string(from: first.coordinate.latitude as NSNumber) ?? ""
-        let currentLongString = formatter.string(from: first.coordinate.longitude as NSNumber) ?? ""
-//        print("current:  latitude: \(currentLatString) longitude: \(currentLongString) ")
-        
-        if previousLatString != currentLatString || previousLongString != currentLongString {
-//            print("andou")
-            blockView.isHidden = true
-            blockIndicator.stopAnimating()
-        } else {
-//            print("parado")
-            blockView.isHidden = false
-            blockIndicator.startAnimating()
-        }
-        previousLat = first.coordinate.latitude
-        previousLong = first.coordinate.longitude
-        
+        location.send(first.coordinate)
+    }
+    
+    func degreesToRadians(degrees: Double) -> Double {
+      return degrees * Double.pi / 180;
+    }
+
+    func distanceInKmBetweenEarthCoordinates(lat1: String, lon1: String, lat2: String, lon2: String) -> Double {
+        let earthRadiusKm: Double = 6371;
+
+        let dLat = degreesToRadians(degrees: Double(lat2)!-Double(lat1)!);
+        let dLon = degreesToRadians(degrees: Double(lon2)!-Double(lon1)!);
+
+        let aux_lat1 = degreesToRadians(degrees: Double(lat1)!);
+        let aux_lat2 = degreesToRadians(degrees: Double(lat2)!);
+
+        let a = sin(dLat/2) * sin(dLat/2)
+        let b = sin(dLon/2) * sin(dLon/2)
+        let c = cos(aux_lat1) * cos(aux_lat2);
+        let d = 2 * atan2(sqrt((a+b)*c), sqrt(1-((a+b)*c)));
+        return earthRadiusKm * d;
     }
 }
