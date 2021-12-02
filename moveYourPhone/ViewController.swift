@@ -30,6 +30,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     var isShownColors: Bool = false
     let location = CurrentValueSubject<CLLocationCoordinate2D, Never>(CLLocationCoordinate2D(latitude: 0, longitude: 0))
     var subscription: AnyCancellable?
+    var finished: Bool = false
     
     @IBOutlet weak var pointLabel: UILabel!
     @IBOutlet weak var gameObjectiveLabel: UILabel!
@@ -92,6 +93,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             self.isShownColors = true
         }
         
+        
         for i in 0...3 {
             let auxRoundIndex = Int.random(in: 0...colorArray.count-1)
             roundColors.append(stringColorNames[auxRoundIndex])
@@ -105,7 +107,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if self.countdown <= 10 {
                 self.gameObjectiveLabel.text = "Repeat the colors. Time left: \(self.countdown)s"
                 if self.countdown == 0 {
-                    self.gameObjectiveLabel.text = "Try again"
+                    if self.finished {
+                        self.gameObjectiveLabel.text = "Well Done"
+                    } else {
+                        self.gameObjectiveLabel.text = "Try again"
+                    }
+                    
                     
                     self.systemBlackButton.isHidden = true
                     self.customYellowButton.isHidden = true
@@ -124,6 +131,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.point = 0
                     timer.invalidate()
                     self.countdown = 15
+                    self.finished = false
                 }
             }
 
@@ -172,6 +180,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                 cont += 1
             } else {
                 print("errou")
+                self.countdown = 1
                 gameObjectiveLabel.text = "Try again"
                 
                 systemBlackButton.isHidden = true
@@ -193,8 +202,9 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             
             if roundColors.count == cont {
                 print("done")
+                finished = true
+                countdown = 1
                 startButton.setTitle("start again", for: .normal)
-                gameObjectiveLabel.text = "Well done!"
                 point += 1
                 if UserDefaults.standard.integer(forKey: "BestScore") < point {
                     UserDefaults.standard.set(point, forKey: "BestScore")
@@ -243,7 +253,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         gameObjectiveLabel.text = "Memorize the colors below (in 5 seconds)"
         
         self.navigationController?.navigationBar.isHidden = true
-        subscription = location.throttle(for: .seconds(0.1), scheduler: DispatchQueue.main, latest: true).receive(on: DispatchQueue.main).sink { [self] coordinate in
+        subscription = location.throttle(for: .seconds(0.5), scheduler: DispatchQueue.main, latest: true).receive(on: DispatchQueue.main).sink { [self] coordinate in
 //            print(coordinate)
 //
             if previousLat == nil || previousLong == nil {
@@ -255,8 +265,8 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let formatter = NumberFormatter()
             formatter.numberStyle = .decimal
             formatter.locale = Locale(identifier: "en_US")
-            formatter.minimumFractionDigits = 4
-            formatter.maximumFractionDigits = 4
+            formatter.minimumFractionDigits = 8
+            formatter.maximumFractionDigits = 8
             let previousLatString = formatter.string(from: previousLat as NSNumber) ?? ""
             let previousLongString = formatter.string(from: previousLong as NSNumber) ?? ""
 //            print("previous:  latitude: \(previousLatString) longitude: \(previousLongString) ")
@@ -266,7 +276,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
 //            print("current:  latitude: \(currentLatString) longitude: \(currentLongString) ")
             
             print(distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString))
-            if distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString) > 0.001 {
+            if distanceInKmBetweenEarthCoordinates(lat1: previousLatString, lon1: previousLongString, lat2: currentLatString, lon2: currentLongString) > 0.0003 {
     //            print("andou")
                 blockView.isHidden = true
                 blockIndicator.stopAnimating()
