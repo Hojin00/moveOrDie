@@ -111,6 +111,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                         self.gameObjectiveLabel.text = "Well Done"
                     } else {
                         self.gameObjectiveLabel.text = "Try again"
+                        self.point = 0
                     }
                     
                     
@@ -128,7 +129,6 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
                     self.systemPurpleButton.isHidden = true
                     
                     self.startButton.setTitle("start again", for: .normal)
-                    self.point = 0
                     timer.invalidate()
                     self.countdown = 15
                     self.finished = false
@@ -203,12 +203,12 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             if roundColors.count == cont {
                 print("done")
                 finished = true
-                countdown = 1
                 startButton.setTitle("start again", for: .normal)
                 point += 1
                 if UserDefaults.standard.integer(forKey: "BestScore") < point {
                     UserDefaults.standard.set(point, forKey: "BestScore")
                 }
+                countdown = 1
             }
             pointLabel.text = "Score: \(point)"
         }
@@ -253,7 +253,7 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
         gameObjectiveLabel.text = "Memorize the colors below (in 5 seconds)"
         
         self.navigationController?.navigationBar.isHidden = true
-        subscription = location.throttle(for: .seconds(0.5), scheduler: DispatchQueue.main, latest: true).receive(on: DispatchQueue.main).sink { [self] coordinate in
+        subscription = location.throttle(for: .seconds(1), scheduler: DispatchQueue.main, latest: true).receive(on: DispatchQueue.main).sink { [self] coordinate in
 //            print(coordinate)
 //
             if previousLat == nil || previousLong == nil {
